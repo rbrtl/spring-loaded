@@ -565,6 +565,7 @@ public class ReloadableType {
 						break;
 					}
 				}
+				found.setAccessible(true);
 				byte[] bs = (byte[]) found.invoke(a, b);
 				proxy.loadNewVersion(versionsuffix, bs);
 				proxy.runStaticInitializer();
@@ -611,10 +612,8 @@ public class ReloadableType {
 				if (relevantProxies != null) {
 					for (ReloadableType relevantProxy : relevantProxies) {
 						Class<?>[] interfacesImplementedByProxy = relevantProxy.getClazz().getInterfaces();
-						// check slashedname correct
-						//						@SuppressWarnings("restriction")
-						byte[] newProxyBytes = sun.misc.ProxyGenerator.generateProxyClass(
-								relevantProxy.getSlashedName(),
+						// TODO confirm slashedname correct
+						byte[] newProxyBytes = Utils.generateProxyClass(relevantProxy.getSlashedName(),
 								interfacesImplementedByProxy);
 						relevantProxy.loadNewVersion(versionsuffix, newProxyBytes, true);
 					}
@@ -935,6 +934,7 @@ public class ReloadableType {
 
 		// TODO needs configurable debug that dumps loaded byte data at this point
 		// Define the permanent piece
+		// DEFAULT METHODS - remove the if
 		if (!typedescriptor.isInterface()) {
 			typeRegistry.defineClass(Utils.getInterfaceName(dottedtypename), interfaceBytes, true);
 		}

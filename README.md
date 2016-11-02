@@ -13,10 +13,10 @@ used in Grails 2.
 
 # Installation
 
-1.2.4 has now been released: [springloaded-1.2.4.RELEASE.jar](http://repo.spring.io/release/org/springframework/springloaded/1.2.4.RELEASE/springloaded-1.2.4.RELEASE.jar)
+1.2.5 has now been released: [springloaded-1.2.5.RELEASE.jar](http://repo.spring.io/release/org/springframework/springloaded/1.2.5.RELEASE/springloaded-1.2.5.RELEASE.jar)
 
-1.2.5 snapshots are in this repo area (grab the most recently built .jar):
-<a href="http://repo.spring.io/webapp/browserepo.html?3&pathId=libs-snapshot-local:org/springframework/springloaded/1.2.5.BUILD-SNAPSHOT">repo.spring.io</a>
+1.2.6 snapshots are in this repo area (grab the most recently built .jar):
+<a href="https://repo.spring.io/webapp/#/artifacts/browse/tree/General/libs-snapshot-local/org/springframework/springloaded/1.2.6.BUILD-SNAPSHOT">repo.spring.io</a>
 
 The download is the agent jar and needs no further unpacking before use.
 
@@ -42,7 +42,7 @@ usage it can't actually handle right now.
 
 Q. With objects changing shape, what happens with respect to reflection?
 A. Reflection results change over time as the objects are reloaded.  For example, modifying a class
-with a new method and calling getDeclaredMethods() after reloading has occurred will mean you see
+with a new method and calling `getDeclaredMethods()` after reloading has occurred will mean you see
 the new method in the results. *But* this does mean if you have existing caches in your system
 that stash reflective information assuming it never changes, those will need to be cleared
 after a reload.
@@ -60,7 +60,7 @@ the invokedynamic instruction and associated new constant pool entries that arri
 
 # Working with the code
 
-	git clone https://github.com/SpringSource/spring-loaded
+	git clone https://github.com/spring-projects/spring-loaded
 
 Once cloned there will be some projects suitable for import into eclipse. The main project and
 some test projects. One of the test projects is an AspectJ project (containing both Java
@@ -76,13 +76,13 @@ To run just the hand crafted ones supply this to the JVM when launching the test
 
     -Dspringloaded.tests.generatedTests=false
 
-NOTE: When running the tests you need to pass -noverify to the JVM also.
+NOTE: When running the tests you need to pass `-noverify` to the JVM also.
 
 Two launch configurations are already included if you are importing these projects into eclipse,
 which run with or without the generated tests.
 
 A gradle build script is included, run './gradlew build' to rebuild the agent - it will be created
-as something like: springloaded/build/libs/springloaded-1.1.5.BUILD-SNAPSHOT.jar
+as something like: `springloaded/build/libs/springloaded-1.1.5.BUILD-SNAPSHOT.jar`
 
 # Can I contribute?
 

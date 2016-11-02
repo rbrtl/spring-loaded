@@ -33,7 +33,7 @@ import java.util.List;
  * result is a list of class references and a list of method references. The former look like this 'a/b/C' whilst the
  * latter look like this 'java/lang/Foo.bar' (the descriptor for the method is not included). Interface methods are
  * skipped.
- * 
+ *
  * @author Andy Clement
  * @since 0.7.3
  */
@@ -180,15 +180,15 @@ public class ConstantPoolChecker2 {
 						referencedMethods.add(s.toString());
 					}
 					break;
-			//			private final static byte CONSTANT_Utf8 = 1;
-			//			private final static byte CONSTANT_Integer = 3;
-			//			private final static byte CONSTANT_Float = 4;
-			//			private final static byte CONSTANT_Long = 5;
-			//			private final static byte CONSTANT_Double = 6;
-			//			private final static byte CONSTANT_String = 8;
-			//			private final static byte CONSTANT_Fieldref = 9;
-			//			private final static byte CONSTANT_InterfaceMethodref = 11;
-			//			private final static byte CONSTANT_NameAndType = 12;
+				//			private final static byte CONSTANT_Utf8 = 1;
+				//			private final static byte CONSTANT_Integer = 3;
+				//			private final static byte CONSTANT_Float = 4;
+				//			private final static byte CONSTANT_Long = 5;
+				//			private final static byte CONSTANT_Double = 6;
+				//			private final static byte CONSTANT_String = 8;
+				//			private final static byte CONSTANT_Fieldref = 9;
+				//			private final static byte CONSTANT_InterfaceMethodref = 11;
+				//			private final static byte CONSTANT_NameAndType = 12;
 			}
 		}
 	}
@@ -327,7 +327,7 @@ public class ConstantPoolChecker2 {
 				}
 				break;
 			case CONSTANT_Methodref:
-				// CONSTANT_Methodref_info { u1 tag; u2 class_index; u2 name_and_type_index; }	
+				// CONSTANT_Methodref_info { u1 tag; u2 class_index; u2 name_and_type_index; }
 				type[index] = b;
 				//if (DEBUG) {
 				cpdata[index] = new int[] { dis.readShort(), dis.readShort() };

@@ -44,6 +44,7 @@ import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.springsource.loaded.Utils.ReturnType.Kind;
 
+import sun.misc.ProxyGenerator;
 
 // TODO debugging tests - how is the experience?  rewriting of field accesses will really
 // affect field navigation in the debugger
@@ -960,7 +961,7 @@ public class Utils implements Opcodes, Constants {
 		private ReturnType(String descriptor, Kind kind) {
 			this.descriptor = descriptor;
 			if (GlobalConfiguration.assertsMode) {
-				if (this.kind == Kind.REFERENCE) {
+				if (kind == Kind.REFERENCE) {
 					if (descriptor.endsWith(";") && !descriptor.startsWith("[")) {
 						throw new IllegalStateException("Should already have been stripped of 'L' and ';': "
 								+ descriptor);
@@ -1615,8 +1616,9 @@ public class Utils implements Opcodes, Constants {
 		}
 		else {
 			if (expectedTypeDescriptor.charAt(0) == 'L') {
-				expectedTypeDescriptor = expectedTypeDescriptor.substring(1, expectedTypeDescriptor.length() - 1).replace(
-						'/', '.');
+				expectedTypeDescriptor = expectedTypeDescriptor.substring(1,
+						expectedTypeDescriptor.length() - 1).replace(
+								'/', '.');
 			}
 			if (!expectedTypeDescriptor.equals(actualType)) {
 				// assignability test
@@ -1856,7 +1858,8 @@ public class Utils implements Opcodes, Constants {
 		public String[] interfaces;
 
 		@Override
-		public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+		public void visit(int version, int access, String name, String signature, String superName,
+				String[] interfaces) {
 			this.interfaces = interfaces;
 		}
 
@@ -1903,5 +1906,68 @@ public class Utils implements Opcodes, Constants {
 
 	public static String getProtectedFieldSetterName(String fieldname) {
 		return "r$setProtField_" + fieldname;
+	}
+
+	private static class ClassnameDiscoveryVisitor extends ClassVisitor {
+
+		public String classname;
+
+		public ClassnameDiscoveryVisitor() {
+			super(ASM5);
+		}
+
+		@Override
+		public void visit(int version, int access, String name, String signature, String superName,
+				String[] interfaces) {
+			this.classname = name;
+		}
+
+	}
+
+	/**
+	 * Discover the classname specified in the supplied bytecode and return it.
+	 *
+	 * @param classbytes the bytecode for the class
+	 * @return the classname recovered from the bytecode
+	 */
+	public static String discoverClassname(byte[] classbytes) {
+		ClassReader cr = new ClassReader(classbytes);
+		ClassnameDiscoveryVisitor v = new ClassnameDiscoveryVisitor();
+		cr.accept(v, 0);
+		return v.classname;
+	}
+
+	private static boolean checkedForNewProxyGenerateMethod = false;
+
+	private static Method newProxyGenerateMethod;
+
+	public static byte[] generateProxyClass(String slashedName, Class<?>[] interfacesImplementedByProxy) {
+		if (!checkedForNewProxyGenerateMethod) {
+			checkedForNewProxyGenerateMethod = true;
+			try {
+				newProxyGenerateMethod = ProxyGenerator.class.getDeclaredMethod("generateProxyClass", String.class,
+						Class[].class, Integer.TYPE);
+			}
+			catch (NoSuchMethodException nsme) {
+				// That's fine, we are early Java8 or before
+			}
+		}
+		if (newProxyGenerateMethod != null) {
+			try {
+				newProxyGenerateMethod.setAccessible(true);
+				byte[] bytes = (byte[]) newProxyGenerateMethod.invoke(null, slashedName, interfacesImplementedByProxy,
+						(Opcodes.ACC_PUBLIC | Opcodes.ACC_FINAL));
+				return bytes;
+			}
+			catch (Exception e) {
+				// Unexpected
+				throw new RuntimeException("Unexpected exception calling proxy generator ", e);
+			}
+		}
+		else {
+			return sun.misc.ProxyGenerator.generateProxyClass(
+					slashedName,
+					interfacesImplementedByProxy);
+		}
 	}
 }
